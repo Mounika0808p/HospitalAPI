@@ -37,11 +37,11 @@ namespace HospitalAPI.Controllers
             return StatusCode((int)HttpStatusCode.Created, newpatient);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, Patient patient)
+        [HttpPut]
+        public async Task<IActionResult> UpdatePatient(Patient patient)
         {
-            await _hospitalDBService.UpdatePatient(id, patient);
-            return StatusCode((int)HttpStatusCode.NoContent);
+            var response = await _hospitalDBService.UpdatePatient(patient);
+            return StatusCode((int)HttpStatusCode.Created,response);
         }
     }
 }
