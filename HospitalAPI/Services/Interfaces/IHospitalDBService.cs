@@ -27,7 +27,7 @@ namespace HospitalAPI.Services.Interfaces
 
         // Define the method signature for UpdatePatient
 
-        Task UpdatePatient(int id, Patient patient);
+        Task<Response> UpdatePatient(Patient patient);
 
         
         

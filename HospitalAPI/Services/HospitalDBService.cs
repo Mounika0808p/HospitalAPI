@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using System.Net;
 using HospitalAPI.Models;
 using HospitalAPI.Services.Interfaces;
 
@@ -160,7 +161,7 @@ namespace HospitalAPI.Services
 
 
 
-        public async Task UpdatePatient(int id, Patient patient)
+        public async Task<Response> UpdatePatient(Patient patient)
         {
             using (var connection = new SqlConnection(_connection))
             {
@@ -178,6 +179,7 @@ namespace HospitalAPI.Services
                 }
 
             }
+            return new Response { statuscode = HttpStatusCode.OK, message = "Patient record updated successfully" };
         }
     }
 }
