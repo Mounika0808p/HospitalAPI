@@ -1,8 +1,10 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Net;
+using System.Text.Json;
 using HospitalAPI.Models;
 using HospitalAPI.Services.Interfaces;
+
 
 namespace HospitalAPI.Services
 {
@@ -11,6 +13,7 @@ namespace HospitalAPI.Services
         private readonly string _connection;
 
         private readonly ILogger<HospitalDBService> _logger;
+        private readonly string _jsonFilePath = "D:\\Mounika_.NET\\API\\HospitalAPI\\HospitalAPI\\HospitalAPI\\Data\\Userdetails.json";
 
         public HospitalDBService(IConfiguration configuration, ILogger<HospitalDBService> logger )
         {
@@ -203,6 +206,83 @@ namespace HospitalAPI.Services
             }
             return new Response { statuscode = HttpStatusCode.OK, message = "Doctor record updated successfully" };
         }
+
+        public Task<User> ValidateUser(string username)
+        {
+            // connect to the json file
+
+            if (File.Exists(_jsonFilePath))
+            {
+                // read the json file
+                var json = File.ReadAllText(_jsonFilePath);
+                // deserialize the json file
+                var users = JsonSerializer.Deserialize<List<User>>(json);
+                // check the username exists
+                var user = users.FirstOrDefault(x => x.Username == username);
+                if (user != null)
+                {
+                    User validateuser = new User()
+                    {
+                        Username = user.Username,
+                        Password = user.Password,
+                    };
+                    return Task.FromResult(validateuser);
+                }
+            }
+            else
+            {
+                _logger.LogError("File not found");
+            }
+            return Task.FromResult<User>(null);
+
+        }
+
+        public Task<User> AddUserdetails(User user)
+        {
+            using (var connection = new SqlConnection(_connection))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("insert into Userdata values(@UserName, @Password)", connection);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Username", user.Username);
+                cmd.Parameters.AddWithValue("@Password", user.Password);
+                cmd.ExecuteNonQuery();
+                return Task.FromResult(user);
+            }
+        }
+        public Task<User> SqlValidateUser(string username)
+        {
+            // connect to the sql server
+            using (var connection = new SqlConnection(_connection))
+            {
+                connection.Open();
+                // sql command 
+                SqlCommand cmd = new SqlCommand("select * from Userdata where Username = @Username", connection);
+                cmd.Parameters.AddWithValue("@Username", username);
+                // execute the command
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        User validateuser = new User()
+                        {
+                            Username = reader.GetString(0),
+                            Password = reader.GetString(1),
+                        };
+                        return Task.FromResult(validateuser);
+                    }
+                    else
+                    {
+                        _logger.LogError("User not found");
+                        return Task.FromResult<User>(null);
+                    }
+                }
+
+            }
+
+        }
+
+       
     }
 }
 

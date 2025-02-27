@@ -30,5 +30,14 @@ namespace HospitalAPI.Services.Interfaces
         // Define the method signature for updatepatient
         Task<Response> UpdateDoctor(Doctor doctor);
 
+        // ValidateUser from json file
+        Task<User> ValidateUser(string username);
+
+        // Define method signature for AddUserdetails
+        Task<User> AddUserdetails(User user);
+
+        // ValidateUser from sql server
+        Task<User> SqlValidateUser(string username);
+
     }
 }

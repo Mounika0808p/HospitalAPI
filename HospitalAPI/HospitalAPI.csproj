@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Data\Userdetails.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
@@ -19,6 +23,7 @@
 
   <ItemGroup>
     <None Include="D:\Mounika_.NET\API\HospitalAPI\HospitalAPI\HospitalAPI\.editorconfig" />
+    <None Include="Data\Userdetails.json" />
   </ItemGroup>
 
 </Project>
