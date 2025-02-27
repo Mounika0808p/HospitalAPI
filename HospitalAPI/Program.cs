@@ -2,8 +2,16 @@
 
 using HospitalAPI.Services;
 using HospitalAPI.Services.Interfaces;
+using NLog;
+using NLog.Web;
+
+var logger = LogManager.Setup().LoadConfigurationFromFile("Nlog.config").GetCurrentClassLogger();
+logger.Info("Application started");
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+builder.Host.UseNLog();
 
 // Add services to the container.
 

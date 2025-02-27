@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 using System.Net;
 using HospitalAPI.Models;
 using HospitalAPI.Services.Interfaces;
@@ -9,10 +10,12 @@ namespace HospitalAPI.Services
     {
         private readonly string _connection;
 
+        private readonly ILogger<HospitalDBService> _logger;
 
-        public HospitalDBService(IConfiguration configuration)
+        public HospitalDBService(IConfiguration configuration, ILogger<HospitalDBService> logger )
         {
             _connection = configuration.GetConnectionString("HospitalConnection");
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Patient>> GetPatients()
@@ -24,6 +27,7 @@ namespace HospitalAPI.Services
             using (var command = new SqlCommand("Select * from Patients", connection))
             {
                 connection.Open();
+                _logger.LogInformation("Connection opened successfully");
                 /// Data reader
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -42,6 +46,7 @@ namespace HospitalAPI.Services
                     }
 
                 }
+                _logger.LogInformation("Data read successfully");
                 return patients;
             }
         }
@@ -144,7 +149,6 @@ namespace HospitalAPI.Services
 
             }
         }
-
         public Task<Doctor> AddDoctor(Doctor doctor)
         {
             using (var connection = new SqlConnection(_connection))
@@ -158,9 +162,6 @@ namespace HospitalAPI.Services
                 return Task.FromResult(doctor);
             }
         }
-
-
-
         public async Task<Response> UpdatePatient(Patient patient)
         {
             using (var connection = new SqlConnection(_connection))
@@ -180,6 +181,27 @@ namespace HospitalAPI.Services
 
             }
             return new Response { statuscode = HttpStatusCode.OK, message = "Patient record updated successfully" };
+        }
+
+        // UpdateDoctor method using stored procedure
+        public async Task<Response> UpdateDoctor(Doctor doctor)
+        {
+            using (var connection = new SqlConnection(_connection))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("UpdateDoctordetails", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@DoctorID", doctor.DoctorId);
+                cmd.Parameters.AddWithValue("@FullName", doctor.FullName);
+                cmd.Parameters.AddWithValue("@Specialty", doctor.Specialty);
+                cmd.Parameters.AddWithValue("@ContactNumber", doctor.ContactNumber);
+                int roweffected = cmd.ExecuteNonQuery();
+                if (roweffected == 0)
+                {
+                    throw new KeyNotFoundException("Doctor record not found");
+                }
+            }
+            return new Response { statuscode = HttpStatusCode.OK, message = "Doctor record updated successfully" };
         }
     }
 }

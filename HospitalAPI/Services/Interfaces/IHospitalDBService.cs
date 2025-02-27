@@ -22,14 +22,13 @@ namespace HospitalAPI.Services.Interfaces
         Task<Patient> AddPatient(Patient patient);
 
         // Define the method signature for AddDoctor
-
         Task<Doctor> AddDoctor(Doctor doctor);
 
-        // Define the method signature for UpdatePatient
-
+        // Define the method signature for UpdatePatient 
         Task<Response> UpdatePatient(Patient patient);
 
-        
-        
+        // Define the method signature for updatepatient
+        Task<Response> UpdateDoctor(Doctor doctor);
+
     }
 }

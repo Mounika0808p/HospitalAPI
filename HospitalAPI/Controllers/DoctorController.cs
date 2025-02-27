@@ -34,6 +34,11 @@ namespace HospitalAPI.Controllers
             var newdoctor = await _hospitalDBService.AddDoctor(doctor);
             return StatusCode((int)HttpStatusCode.Created, newdoctor);
         }
-
+        [HttpPut]
+        public async Task<IActionResult> UpdateDoctor(Doctor doctor)
+        {
+            var response = await _hospitalDBService.UpdateDoctor(doctor);
+            return StatusCode((int)HttpStatusCode.Created, response);
+        }
     }
 }
