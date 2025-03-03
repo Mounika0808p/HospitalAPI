@@ -26,4 +26,10 @@
     <None Include="Data\Userdetails.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="EcartAPI">
+      <HintPath>..\..\..\EcartAPI\EcartAPI\bin\Debug\net8.0\EcartAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using HospitalAPI.Models;
 using HospitalAPI.Services.Interfaces;
+using EcartAPI;
 
 
 namespace HospitalAPI.Services
@@ -239,22 +240,31 @@ namespace HospitalAPI.Services
 
         public Task<User> AddUserdetails(User user)
         {
-            using (var connection = new SqlConnection(_connection))
+            
+            if (user.Username != null && user.Password != null)
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand("insert into Userdata values(@UserName, @Password)", connection);
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@Username", user.Username);
-                cmd.Parameters.AddWithValue("@Password", user.Password);
-                cmd.ExecuteNonQuery();
-                return Task.FromResult(user);
+                using (var connection = new SqlConnection(_connection))
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("insert into Userdata values(@UserName, @Password)", connection);
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@Username", user.Username);
+                    cmd.Parameters.AddWithValue("@Password", user.Password);
+                    cmd.ExecuteNonQuery();
+                    
+                }
+            } else
+            {
+                _logger.LogInformation("User details are not given correctly"); 
             }
+            return Task.FromResult(user);
         }
         public Task<User> SqlValidateUser(string username)
         {
             // connect to the sql server
             using (var connection = new SqlConnection(_connection))
             {
+                
                 connection.Open();
                 // sql command 
                 SqlCommand cmd = new SqlCommand("select * from Userdata where Username = @Username", connection);
